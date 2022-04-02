@@ -33,6 +33,7 @@ def adc():
             l = m
         else:
             r = m
+        time.sleep(0.01)
     return l
 
 try:
