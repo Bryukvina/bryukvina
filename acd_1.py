@@ -29,6 +29,7 @@ def adc():
         compValue = GPIO.input(comp)
         if comp == 1:
             fv = min(fv, value)
+        time.sleep(0.01)
     return fv
 
 try:
