@@ -1,3 +1,4 @@
+
 import RPi.GPIO as GPIO
 import time
 
@@ -5,47 +6,38 @@ dac = [26, 19, 13, 6, 5, 11, 9, 10]
 bits = len(dac)
 levels = 2 ** bits
 maxVoltage = 3.3
-comp = 
+comp = 4
 troyka = 17
-
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(dac, GPIO.OUT)
 GPIO.setup(troyka, GPIO.OUT, initial=GPIO.HIGH)
 GPIO.setup(comp, GPIO.IN)
 
-def decimal2binary(decimal):
-    return [int(bit) for bit in bin(decimal)[2:].zfill(bits)]
-
 def num2dac(value):
-    signal = decimal2binary(value)
-    GRIO.output(dac, signal)
+    signal = [int(bit) for bit in bin(value)[2:].zfill(bits)]
+    GPIO.output(dac, signal)
     return signal
 
 def adc():
-    l = 0
-    r = 256
-    while r - l > 1:
-        m = (r - l) // 2
-        signal = num2dac(m)
-        compValue = GPIO.input(comp)
-        if compValue == 1:
-            l = m
-        else:
-            r = m
+    left = 0
+    right = 256
+    while right - left > 1:
+        middle = (right + left) // 2
+        num2dac(middle)
         time.sleep(0.01)
-    return l
+        if GPIO.input(comp) == 1:
+            left = middle
+        else:
+            right = middle
+    return left
 
 try:
     while True:
         value = adc()
         voltage = value / levels * maxVoltage
         print("ADC value: {:^3}, input Voltage = {:.2f}".format(value, voltage))
-except KeyboardInterrupt:
-    print("The program was stopped by the keyboard")
-else:
-    pass
+
 finally:
-    p.stop()
-    GPIO.cleanup(channal)
+    GPIO.cleanup()
     print("GPIO cleanup complited")
