@@ -1,33 +1,47 @@
-
 import numpy as np
 import matplotlib.pyplot as plt
 
-s = 20
+step = 4
+size = 30
+levels = 2 ** 8
+maxVoltage = 3.3
+data_array = np.loadtxt("data.txt", dtype=int)
 
-x = [1, 0.5, 0.6, 0.9]
-y_с = [1.223684211, 1.230769231, 1.573770492, 1.230769231]
-y_lс = []
-
-
-a_с = 0.005365749299
-b = 1.400946682
+fig, ax = plt.subplots()
 
 
+data_array = data_array / levels * maxVoltage
 
-for i in range(len(x)):
-    y_lс.append(x[i] * a_с + b)
-    
+with open("settings.txt", "r") as settings:
+    set_list = list(map(float, settings.read().split()))
 
-
-for i in range(len(x)):
-    plt.scatter(x[i], y_с[i], s, c = "b", marker="+")
-
-
-plt.plot(x, y_lс, c = "red", alpha=0.4)
+times = []
+for i in range(len(data_array)):
+    times.append(i * set_list[1])
 
 
-plt.ylabel("h1/(h1-h2), см")
-plt.xlabel("dt, шт")
-plt.legend(loc='upper left')
+
+for i in range(0, len(data_array), step):
+    plt.scatter(times[i], data_array[i], size, c = "b", marker=".")
+
+sup_time = int(times[-1] - times[data_array.argmax()]) 
+text1 = 'Время разрядки = ' + str(int(times[data_array.argmax()])) + " сек"
+text2 = 'Время зарядки = ' + str(sup_time) + " сек"
+
+
+plt.plot(times, data_array, c = "blue", alpha=0.7, label="V(t)")
+plt.ylabel("Voltage, V")
+plt.xlabel("time, sec")
+plt.axis([min(times), max(times), min(data_array), max(data_array) + 0.3])
+ax.legend()
+ax.legend(loc = "upper right")
+ax.set_title('Процесс заряда и разряда кондесатора в RC-цепочке')
+ax.minorticks_on()
+ax.grid(which='major', color = 'grey', linewidth = 1)
+ax.grid(which='minor', color = 'grey', linestyle = ':')
+plt.text(160, 1.5, text1)
+plt.text(160, 2, text2)
+fig.set_figheight(5)
+fig.set_figwidth(8)
 plt.show()
-save(name='grafic_g', fmt='png')
+plt.savefig('grafic_g.svg')
