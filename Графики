@@ -1,0 +1,33 @@
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+s = 20
+
+x = [1, 0.5, 0.6, 0.9]
+y_с = [1.223684211, 1.230769231, 1.573770492, 1.230769231]
+y_lс = []
+
+
+a_с = 0.005365749299
+b = 1.400946682
+
+
+
+for i in range(len(x)):
+    y_lс.append(x[i] * a_с + b)
+    
+
+
+for i in range(len(x)):
+    plt.scatter(x[i], y_с[i], s, c = "b", marker="+")
+
+
+plt.plot(x, y_lс, c = "red", alpha=0.4)
+
+
+plt.ylabel("h1/(h1-h2), см")
+plt.xlabel("dt, шт")
+plt.legend(loc='upper left')
+plt.show()
+save(name='grafic_g', fmt='png')
